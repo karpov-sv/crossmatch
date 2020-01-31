@@ -1,0 +1,60 @@
+{% extends "template.html" %}
+
+{% block ptitle %}Cutouts{% endblock %}
+
+{% block title %}Cutouts{% endblock %}
+
+{% block content %}
+
+  <h3>Cutouts</h3>
+
+  <form class="form mb-4" role="form" action="{% url 'search' %}" method="post">{% csrf_token %}
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="addon-coords">Center:</span>
+        </div>
+        <input type="text" class="form-control" id="coords" name="coords" placeholder="Coordinates or SIMBAD object name" size=40 aria-label="Coordinates" aria-describedby="addon-coords">
+
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-sr">Radius:</span>
+        </div>
+        <div class="input-group-append">
+          <input type="text" class="form-control" id="sr" name="sr" placeholder="Radius, degrees" size=15  aria-label="Radius" aria-describedby="addon-sr" value=0.02>
+        </div>
+
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-secondary">Search</button>
+
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <div>
+
+    {% if galex_nuv or galex_fuv %}
+      <h3>GALEX NUV+FUV</h3>
+      <img src="{{ galex_nuv }}" class="img-thumbnail">
+      <img src="{{ galex_fuv }}" class="img-thumbnail">
+    {% endif %}
+
+    {% if sdss %}
+      <h3>DSS</h3>
+      <img src="{{ dss }}" class="img-thumbnail">
+    {% endif %}
+
+    {% if sdss %}
+      <h3>SDSS DR12</h3>
+      <img src="{{ sdss }}" class="img-thumbnail">
+    {% endif %}
+
+    {% if ps1 %}
+      <h3>PanSTARRS Color</h3>
+      <img src="{{ ps1 }}" class="img-thumbnail">
+    {% endif %}
+
+  </div>
+
+{% endblock %}

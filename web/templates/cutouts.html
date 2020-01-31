@@ -1,0 +1,60 @@
+{% extends "template.html" %}
+
+{% block ptitle %}Cutouts{% endblock %}
+
+{% block title %}Cutouts{% endblock %}
+
+{% block content %}
+
+  <form class="form mb-4" role="form" action="{% url 'cutouts' %}" method="post">{% csrf_token %}
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="addon-coords">Center:</span>
+        </div>
+        <input type="text" class="form-control" id="coords" name="coords" placeholder="Coordinates or SIMBAD object name" size=40 aria-label="Coordinates" aria-describedby="addon-coords" value="{{ coords }}">
+
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-sr">Radius:</span>
+        </div>
+        <div class="input-group-append">
+          <input type="text" class="form-control" id="sr" name="sr" placeholder="Radius, degrees" size=15  aria-label="Radius" aria-describedby="addon-sr" value={{ sr }}>
+        </div>
+
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-secondary">Search</button>
+
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  {% if message %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+  {% endif %}
+
+  {% if ra and dec and sr %}
+    <h3>{{ sr }} deg around {{ ra }} {{ dec }}</h3>
+  {% endif %}
+
+  {% if cutouts %}
+    <div class="row">
+
+      {% for cutout in cutouts %}
+        <div class="col-sm-4 pr-1 pl-1 pb-1 pt-1">
+          <div class="card">
+            <div class="card-header">
+              {{ cutout.name }}
+            </div>
+            <img class="card-img-top" src="{{ cutout.url }}"/>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  {% endif %}
+
+{% endblock %}

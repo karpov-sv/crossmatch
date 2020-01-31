@@ -1,0 +1,148 @@
+{% extends "template.html" %}
+
+{% load tags %}
+
+{% block ptitle %}UV-Only{% endblock %}
+
+{% block title %}UV-Only Sources{% endblock %}
+
+{% block content %}
+
+  <form class="form mb-4" role="form" action="{% url 'uv-only' %}" method="post">{% csrf_token %}
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="addon-coords">Center:</span>
+        </div>
+        <input type="text" class="form-control" id="coords" name="coords" placeholder="Coordinates or SIMBAD object name" size=40 aria-label="Coordinates" aria-describedby="addon-coords" value="{{ coords }}">
+
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-sr">Radius:</span>
+        </div>
+        <div class="input-group-append">
+          <input type="text" class="form-control" id="sr" name="sr" placeholder="Radius, degrees" size=15  aria-label="Radius" aria-describedby="addon-sr" value={{ sr }}>
+        </div>
+
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-nuv">NUV <</span>
+        </div>
+        <div class="input-group-append">
+          <input type="text" class="form-control" id="nuv" name="nuv" placeholder="Mag limit" size=10  aria-label="NUV Mag" aria-describedby="addon-nuv" {% if nuv %}value={{ nuv }}{% endif %}>
+        </div>
+
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-fuv">FUV <</span>
+        </div>
+        <div class="input-group-append">
+          <input type="text" class="form-control" id="fuv" name="fuv" placeholder="Mag limit" size=10  aria-label="FUV Mag" aria-describedby="addon-fuv" {% if fuv %}value={{ fuv }}{% endif %}>
+        </div>
+
+        <div class="input-group-append">
+          <div class="input-group-text">
+            Preview:
+          </div>
+          <div class="input-group-text">
+            <input type="checkbox" id="preview" name="preview" {% if preview %}checked{% endif %}>
+          </div>
+        </div>
+
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-secondary">Search</button>
+
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  {% if message %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+  {% endif %}
+
+  {% if ra and dec and sr %}
+    <h3>{{ sr }} deg around {{ ra }} {{ dec }}</h3>
+  {% endif %}
+
+  {% if cats %}
+    <ul class="list-group list-group-horizontal mt-4 mb-4">
+      {% for cat in cats %}
+        <li class="list-group-item">{{ cat.name }}: {{ cat.table|length }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if log %}
+    <div class="card">
+      <div class="card-body">
+        {% for msg in log %}
+          {{ msg }}<br>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if table is not None %}
+
+    <div class="mt-4 mb-4">
+      <a href="{% url 'uv-only_download' %}?ra={{ ra }}&dec={{ dec }}&sr={{ sr }}">Download full annotated GALEX table</a>
+    </div>
+
+    <div class="mt-4 mb-4">
+      <img src="{% url 'uv-only_plot' %}?ra={{ ra }}&dec={{ dec }}&sr={{ sr }}&field=NUV" class="img-fluid img-thumbnail">
+      <img src="{% url 'uv-only_plot' %}?ra={{ ra }}&dec={{ dec }}&sr={{ sr }}&field=FUV" class="img-fluid img-thumbnail">
+    </div>
+
+    <h4>
+      GALEX-only sources
+      {% if nuv or fuv %} with{% endif %}
+      {% if nuv %} NUV<{{ nuv }}{% endif %}
+      {% if fuv %} FUV<{{ fuv }}{% endif %}
+      : {{ table|length }}
+    </h4>
+    <table class="table table-sm table-hover mt-4 mb-4">
+      <thead>
+        <tr>
+          <th></th>
+          {% for col in table.colnames %}
+            <th>{{ col }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in table %}
+          <tr>
+            <td><span class="fa-stack">
+              <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-out.add=.&-source=II/335/galex_ais&-c={{ row.RAJ2000 }}%20{{ row.DEJ2000 }},eq=J2000,rs=2&-out.orig=o" title="Details" target="_blank">
+                <i class="fa fa-info"></i>
+              </a>
+              <a href="{% url 'cutouts' %}?coords={{ row.RAJ2000 }}+{{ row.DEJ2000 }}&sr=0.02" title="Preview" target="_blank">
+                <i class="fa fa-photo"></i>
+              </a>
+            </span>
+            </td>
+            {% for col in row %}
+              <td>{{ col }}</td>
+            {% endfor %}
+          </tr>
+
+          {% if preview %}
+            <tr>
+              <td colspan={{ row|length|add:1 }} style="border: 0">
+                {% cutout_img 'galex_fuv' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% cutout_img 'galex_nuv' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% cutout_img 'sdss' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% cutout_img 'ps1' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% cutout_img 'wise_w1' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% cutout_img 'wise_w4' row.RAJ2000 row.DEJ2000 0.02 256 %}
+              </td>
+            </tr>
+          {% endif %}
+
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+{% endblock %}
