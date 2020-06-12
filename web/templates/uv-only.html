@@ -101,7 +101,7 @@
       {% if fuv %} FUV<{{ fuv }}{% endif %}
       : {{ table|length }}
     </h4>
-    <table class="table table-sm table-hover mt-4 mb-4">
+    <table class="table table-sm table-hover small mt-4 mb-4">
       <thead>
         <tr>
           <th></th>
@@ -132,7 +132,10 @@
               <td colspan={{ row|length|add:1 }} style="border: 0">
                 {% cutout_img 'galex_fuv' row.RAJ2000 row.DEJ2000 0.02 256 %}
                 {% cutout_img 'galex_nuv' row.RAJ2000 row.DEJ2000 0.02 256 %}
-                {% cutout_img 'sdss' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% cutout_img 'galex' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% if has_sdss %}
+                  {% cutout_img 'sdss' row.RAJ2000 row.DEJ2000 0.02 256 %}
+                {% endif %}
                 {% cutout_img 'ps1' row.RAJ2000 row.DEJ2000 0.02 256 %}
                 {% cutout_img 'wise_w1' row.RAJ2000 row.DEJ2000 0.02 256 %}
                 {% cutout_img 'wise_w4' row.RAJ2000 row.DEJ2000 0.02 256 %}

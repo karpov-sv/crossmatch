@@ -108,6 +108,8 @@ def uv_only(request, size=512):
 
                 context['table'] = table
 
+                context['has_sdss'] = 'sdss' in [_['name'] for _ in work['cats']]
+
             context['log'] = work['log']
 
     return TemplateResponse(request, 'uv-only.html', context=context)

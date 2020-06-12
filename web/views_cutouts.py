@@ -22,9 +22,9 @@ def cutouts_ps1(request, size=512):
 
     return redirect(url)
 
-cutout_surveys = ['galex_nuv', 'galex_fuv', 'dss', 'sdss', 'ps1', 'wise_w1', 'wise_w2', 'wise_w3', 'wise_w4']
+cutout_surveys = ['galex_nuv', 'galex_fuv', 'dss', 'sdss', 'ps1', 'skymapper', 'wise_w1', 'wise_w2', 'wise_w3', 'wise_w4']
 
-def get_cutout_url(survey, ra, dec, sr, size):
+def get_cutout_url(survey, ra, dec, sr, size, overlay=False):
     # GALEX
     if survey == 'galex_nuv':
         return {'name': 'GALEX NUV',
@@ -33,7 +33,7 @@ def get_cutout_url(survey, ra, dec, sr, size):
                     'Size': sr,
                     'Pixels': size,
                     'Survey': 'galex near uv',
-                    'Catalog': 'II/335/galex_ais',
+                    'Catalog': 'II/335/galex_ais' if overlay else None,
                     'Return': 'GIF',
                     'LUT': 'colortables/blue-white.bin'})}
     elif survey == 'galex_fuv':
@@ -43,9 +43,23 @@ def get_cutout_url(survey, ra, dec, sr, size):
                     'Size': sr,
                     'Pixels': size,
                     'Survey': 'galex far uv',
-                    'Catalog': 'II/335/galex_ais',
+                    'Catalog': 'II/335/galex_ais' if overlay else None,
                     'Return': 'GIF',
                     'LUT': 'colortables/blue-white.bin'})}
+    elif survey == 'galex':
+        return {'name': 'GALEX',
+                'url': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
+                    'hips': 'CDS/P/GALEXGR6/AIS/color',
+                    'ra': ra,
+                    'dec': dec,
+                    'width': size,
+                    'height': size,
+                    'fov': sr,
+                    'projection': 'TAN',
+                    'coordsys': 'icrs',
+                    'rotation_angle': 0.0,
+                    'format': 'jpg',
+                    'stretch': 'linear'})}
 
     # DSS
     elif survey == 'dss':
@@ -55,7 +69,7 @@ def get_cutout_url(survey, ra, dec, sr, size):
                     'Size': sr,
                     'Pixels': size,
                     'Survey': 'DSS',
-                    'Catalog': 'I/345/gaia2', # Gaia
+                    'Catalog': 'I/345/gaia2' if overlay else None, # Gaia
                     'Return': 'GIF',
                     'LUT': 'colortables/blue-white.bin'})}
 
@@ -68,10 +82,10 @@ def get_cutout_url(survey, ra, dec, sr, size):
                     'width': size,
                     'height': size,
                     'scale': sr*3600/size,
-                    'opt': 'PI'})}
+                    'opt': 'PI' if overlay else ''})}
 
     # PS1
-    elif survey == 'ps1':
+    elif survey == 'ps1orig':
         return {'name': 'PanSTARRS',
                 'url': reverse('cutouts_ps1') + '?' + urllib.urlencode({
                     'ra': ra,
@@ -79,7 +93,36 @@ def get_cutout_url(survey, ra, dec, sr, size):
                     'sr': sr,
                     'size': size})}
 
+    elif survey == 'panstarrs' or survey == 'ps1':
+        return {'name': 'PanSTARRS',
+                'url': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
+                    'hips': 'CDS/P/PanSTARRS/DR1/color',
+                    'ra': ra,
+                    'dec': dec,
+                    'width': size,
+                    'height': size,
+                    'fov': sr,
+                    'projection': 'TAN',
+                    'coordsys': 'icrs',
+                    'rotation_angle': 0.0,
+                    'format': 'jpg',
+                    'stretch': 'linear'})}
+
     # WISE
+    elif survey == 'wise':
+        return {'name': 'allWISE',
+                'url': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
+                    'hips': 'CDS/P/allWISE/color',
+                    'ra': ra,
+                    'dec': dec,
+                    'width': size,
+                    'height': size,
+                    'fov': sr,
+                    'projection': 'TAN',
+                    'coordsys': 'icrs',
+                    'rotation_angle': 0.0,
+                    'format': 'jpg',
+                    'stretch': 'linear'})}
     elif survey == 'wise_w1':
         return {'name': 'WISE 3.4um',
                 'url': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
@@ -129,6 +172,23 @@ def get_cutout_url(survey, ra, dec, sr, size):
         return {'name': 'WISE 22um',
                 'url': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
                     'hips': 'CDS/P/allWISE/W4',
+                    'ra': ra,
+                    'dec': dec,
+                    'width': size,
+                    'height': size,
+                    'fov': sr,
+                    'projection': 'TAN',
+                    'coordsys': 'icrs',
+                    'rotation_angle': 0.0,
+                    'format': 'jpg',
+                    'stretch': 'linear',
+                    'cmap': 'viridis'})}
+
+    # SkyMapper
+    elif survey == 'smss' or survey == 'skymapper':
+        return {'name': 'SkyMapper',
+                'url': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
+                    'hips': 'CDS/P/skymapper-color',
                     'ra': ra,
                     'dec': dec,
                     'width': size,
