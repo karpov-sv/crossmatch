@@ -16,3 +16,11 @@ def cutout_img(survey, ra, dec, sr, size=512):
     cutout = views_cutouts.get_cutout_url(survey, ra, dec, sr, size)
 
     return mark_safe('<img src="%s" class="img-fluid img-thumbnail" title="%s">' % (cutout['url'], cutout['name']))
+
+@register.simple_tag(takes_context=False)
+def cat_row_ra(cat, row):
+    return row[cat.get('ra', 'RAJ2000')]
+
+@register.simple_tag(takes_context=False)
+def cat_row_dec(cat, row):
+    return row[cat.get('dec', 'DEJ2000')]

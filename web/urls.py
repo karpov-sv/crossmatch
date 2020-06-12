@@ -9,6 +9,7 @@ from . import settings
 from . import views
 from . import views_cutouts
 from . import views_uv
+from . import views_sed
 
 urlpatterns = [
     # Index
@@ -18,9 +19,13 @@ urlpatterns = [
     url(r'cutouts$', views_cutouts.cutouts, name="cutouts"),
     url(r'cutouts/ps1$', views_cutouts.cutouts_ps1, name="cutouts_ps1"),
 
+    # UV only sources
     url(r'uv-only$', views_uv.uv_only, name="uv-only"),
     url(r'uv-only/download$', views_uv.uv_only_download, name="uv-only_download"),
     url(r'uv-only/plot$', views_uv.uv_only_plot, name="uv-only_plot"),
+
+    # SED
+    url(r'sed$', views_sed.sed, name="sed"),
 
     # Robots
     url(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /\n", content_type="text/plain")),

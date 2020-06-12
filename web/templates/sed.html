@@ -1,0 +1,135 @@
+{% extends "template.html" %}
+
+{% load tags %}
+{% load filters %}
+
+{% block ptitle %}SED{% endblock %}
+
+{% block title %}Spectral Energy Distribution{% endblock %}
+
+{% block content %}
+
+  <form class="form mb-4" role="form" action="{% url 'sed' %}" method="post">{% csrf_token %}
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="addon-coords">Center:</span>
+        </div>
+        <input type="text" class="form-control" id="coords" name="coords" placeholder="Coordinates or SIMBAD object name" size=40 aria-label="Coordinates" aria-describedby="addon-coords" value="{{ coords }}">
+
+        <!--
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-sr">Radius:</span>
+        </div>
+        <div class="input-group-append">
+          <input type="text" class="form-control" id="sr" name="sr" placeholder="Radius, degrees" size=15  aria-label="Radius" aria-describedby="addon-sr" value={{ sr }}>
+        </div>
+        -->
+
+        <div class="input-group-append">
+          <div class="input-group-text">
+            Preview:
+          </div>
+          <div class="input-group-text">
+            <input type="checkbox" id="preview" name="preview" {% if preview %}checked{% endif %}>
+          </div>
+        </div>
+
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-secondary">Search</button>
+
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  {% if message %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+  {% endif %}
+
+  {% if ra and dec and sr %}
+    <h3>SED for {{ ra }} {{ dec }}</h3>
+  {% endif %}
+
+  {% if cats %}
+    <ul class="list-group list-group-horizontal mt-4 mb-4">
+      {% for cat in cats %}
+        <li class="list-group-item">{{ cat.name }}: {{ cat.table|length }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if log %}
+    <div class="card">
+      <div class="card-body">
+        {% for msg in log %}
+          {{ msg }}<br>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if preview and cats %}
+    <div class="mt-4 mb-4">
+      <h3><a href="{% url 'cutouts' %}?coords={{ ra }}+{{ dec }}&sr=0.02">Previews</a></h3>
+
+      {% cutout_img 'galex_fuv' ra dec 0.02 256 %}
+      {% cutout_img 'galex_nuv' ra dec 0.02 256 %}
+
+      {% cutout_img 'sdss' ra dec 0.02 256 %}
+
+      {% if dec > -30 %}
+        {% cutout_img 'ps1' ra dec 0.02 256 %}
+      {% endif %}
+      {% if dec < 0 %}
+        {% cutout_img 'skymapper' ra dec 0.02 256 %}
+      {% endif %}
+
+      {% cutout_img 'wise' ra dec 0.02 256 %}
+      <!--
+      {% cutout_img 'wise_w1' ra dec 0.02 256 %}
+      {% cutout_img 'wise_w2' ra dec 0.02 256 %}
+      {% cutout_img 'wise_w3' ra dec 0.02 256 %}
+      {% cutout_img 'wise_w4' ra dec 0.02 256 %}
+      -->
+    </div>
+  {% endif %}
+
+  {% for cat in cats %}
+    <div>
+      <h3>{{ cat.name|upper }} - <a href="https://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source={{ cat.cds }}" target="_blank">{{ cat.cds }}</a></h3>
+
+      <table class="table table-sm table-hover small mt-4 mb-4">
+        <thead>
+          <tr>
+            <th></th>
+            {% for col in cat.table.colnames %}
+              <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for row in cat.table %}
+            <tr>
+              <td>
+                <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-out.add=.&-source={{ cat.cds }}&-c={% cat_row_ra cat row %}%20{% cat_row_dec cat row %},eq=J2000,rs=2&-out.orig=o" title="Details" target="_blank">
+                  <i class="fa fa-info"></i>
+                </a>
+              </td>
+              {% for col in row %}
+                <td>{{ col }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+
+  {% endfor %}
+
+{% endblock %}

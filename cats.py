@@ -19,7 +19,7 @@ catslist = {
     # Distances to GaiaDR2 sources
     'gaiadr2dist': {'file': 'gaiadr2dist.xml', 'cds': 'I/347/gaia2dis', 'sr': 3, 'columns': ['Source', 'rest', 'b_rest', 'B_rest', 'rlen', 'ResFlag'], 'ID': 'Source'},
 
-    'galex' : {'file' : 'galex.xml', 'cds': 'II/335/galex_ais', 'sr': 3, 'columns': ['RAJ2000', 'DEJ2000', 'objid', 'FUV', 'e_FUV', 'NUV', 'e_NUV', 'Fafl', 'Nafl', 'Fexf', 'Nexf', 'Fr', 'Nr', 'nS_G', 'fS_G'], 'conversions': {'NUVmag': 'NUV', 'e_NUVmag': 'e_NUV', 'FUVmag': 'FUV', 'e_FUVmag': 'e_FUV'}, 'fallback_notuse': 'galex_old', 'ID': 'objid'},
+    'galex' : {'file' : 'galex.xml', 'cds': 'II/335/galex_ais', 'sr': 5, 'columns': ['RAJ2000', 'DEJ2000', 'objid', 'FUV', 'e_FUV', 'NUV', 'e_NUV', 'Fafl', 'Nafl', 'Fexf', 'Nexf', 'Fr', 'Nr', 'nS_G', 'fS_G'], 'conversions': {'NUVmag': 'NUV', 'e_NUVmag': 'e_NUV', 'FUVmag': 'FUV', 'e_FUVmag': 'e_FUV'}, 'fallback_notuse': 'galex_old', 'ID': 'objid'},
 
     # Fallback GALEX catalogue
     'galex_old' : {'file' : 'galex.xml', 'cds': 'II/312/ais', 'sr': 1, 'columns': ['RAJ2000', 'DEJ2000', 'objid', 'FUV', 'e_FUV', 'NUV', 'e_NUV', 'Fafl', 'Nafl', 'Fexf', 'Nexf', 'Fr', 'Nr'], 'id': 'objid'},
@@ -38,14 +38,20 @@ catslist = {
 'Ymag', 'e_Ymag', 'Jmag1', 'e_Jmag1', 'Jmag2', 'e_Jmag2', 'Hmag', 'e_Hmag', 'Kmag', 'e_Kmag', 'ID', 'cl', 'p*', 'pG', 'pN'], 'conversions': {'p_': 'p*'}, 'ID': 'ID'},
 
     'wise': {'file': 'wise.xml', 'cds': 'II/328', 'sr': 2, 'columns': ['AllWISE', 'RAJ2000', 'DEJ2000', 'W1mag', 'e_W1mag', 'W2mag', 'e_W2mag', 'W3mag', 'e_W3mag', 'W4mag', 'e_W4mag', 'Jmag', 'e_Jmag', 'Hmag', 'e_Hmag', 'Kmag', 'e_Kmag', 'ID', 'ccf', 'ex', 'var', 'qph'], 'ID': 'AllWISE'},
+
+    # Extra
+    'tycho2': {'file': 'tycho2.xml', 'cds': 'I/259/tyc2', 'sr': 1, 'ra': '_RAJ2000', 'dec': '_DEJ2000', 'columns': ['recno', 'TYC1', 'TYC2', 'TYC3', '_RAJ2000', '_DEJ2000', 'BTmag', 'e_BTmag', 'VTmag', 'e_VTmag', 'prox'], 'extracols': ['_RAJ2000', '_DEJ2000', 'recno'], 'ID': 'recno'},
+
+    'skymapper': {'file': 'smss.xml', 'cds': 'II/358/smss', 'ra': 'RAICRS', 'dec' : 'DEICRS', 'sr': 1, 'columns': ['ObjectId', 'RAICRS', 'DEICRS', 'SMSS', 'flags', 'uPSF', 'e_uPSF', 'vPSF', 'e_vPSF', 'gPSF', 'e_gPSF', 'rPSF', 'e_rPSF', 'iPSF', 'e_iPSF', 'zPSF', 'e_zPSF', 'Prox'], 'ID': 'ObjectId'},
 }
 
-def download_table(cdsname, name=None, ra=0, dec=0, sr=0.1, columns=[], limit=-1, conversions={}):
+def download_table(cdsname, name=None, ra=0, dec=0, sr=0.1, columns=[], limit=-1, conversions={}, extracols=[]):
 
     if name is None:
         name = cdsname
 
-    v = Vizier(columns = ['**'])
+    cols = ['**'] + extracols
+    v = Vizier(columns = cols)
     v.ROW_LIMIT = limit
     t = v.query_region('%g %g' % (ra, dec), radius='%g degrees' % sr, catalog=cdsname)
 
@@ -105,7 +111,7 @@ def self_match_cat(cat, superid='SuperID', verbose=False):
     if verbose:
         print(len(np.unique(cat['table'][superid])), '/', len(cat['table']), 'records unique')
 
-def get_cat(catname, ra=0, dec=0, sr=0.1, dirname=None, overwrite=False):
+def get_cat(catname, ra=0, dec=0, sr=0.1, dirname=None, overwrite=False, self_match=True):
     cat = catslist[catname].copy()
     cat['name'] = catname
 
@@ -115,7 +121,7 @@ def get_cat(catname, ra=0, dec=0, sr=0.1, dirname=None, overwrite=False):
         print("Got cached catalogue", catname, "from", posixpath.join(dirname, cat['file']), ":", len(cat['table']), "rows and", len(cat['table'].colnames), "columns")
         return cat
 
-    cat['table'] = download_table(cat['cds'], name=cat['name'], ra=ra, dec=dec, sr=sr, columns=cat['columns'], conversions=cat.get('conversions'))
+    cat['table'] = download_table(cat['cds'], name=cat['name'], ra=ra, dec=dec, sr=sr, columns=cat['columns'], conversions=cat.get('conversions'), extracols=cat.get('extracols', []))
 
     if (not cat['table'] or not len(cat['table'])) and cat.has_key('fallback'):
         print("Falling back to", cat['fallback'])
@@ -150,8 +156,9 @@ def get_cat(catname, ra=0, dec=0, sr=0.1, dirname=None, overwrite=False):
                     cat['table'].add_column(col)
         print('Augmenting finished')
 
-    # Self-match table
-    self_match_cat(cat, superid='SuperID', verbose=True)
+    if self_match:
+        # Self-match table
+        self_match_cat(cat, superid='SuperID', verbose=True)
 
     if dirname and (overwrite or not posixpath.exists(posixpath.join(dirname, cat['file']))):
         cat['table'].write(posixpath.join(dirname, cat['file']), format='votable', overwrite=True)
