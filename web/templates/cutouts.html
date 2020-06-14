@@ -1,5 +1,7 @@
 {% extends "template.html" %}
 
+{% load tags %}
+
 {% block ptitle %}Cutouts{% endblock %}
 
 {% block title %}Cutouts{% endblock %}
@@ -15,46 +17,91 @@
         <input type="text" class="form-control" id="coords" name="coords" placeholder="Coordinates or SIMBAD object name" size=40 aria-label="Coordinates" aria-describedby="addon-coords" value="{{ coords }}">
 
         <div class="input-group-append">
-          <span class="input-group-text" id="addon-sr">Radius:</span>
+          <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#collapseMultiCoords" aria-expanded="false" aria-controls="collapseMultiCoords">Multiple?</button>
+        </div>
+
+        <div class="input-group-append">
+          <span class="input-group-text" id="addon-sr">Size:</span>
         </div>
         <div class="input-group-append">
-          <input type="text" class="form-control" id="sr" name="sr" placeholder="Radius, degrees" size=15  aria-label="Radius" aria-describedby="addon-sr" value={{ sr }}>
+          <input type="text" class="form-control" id="sr" name="sr_value" placeholder="Size" size=15  aria-label="Radius" aria-describedby="addon-sr" value={{ sr_value }}>
+        </div>
+        <div class="input-group-append">
+          <select class="custom-select" name="sr_units" title="Units"  aria-label="Units">
+            <option value="deg" {% if sr_units == 'deg' %}selected{% endif %}>Deg</option>
+            <option value="arcmin" {% if sr_units == 'arcmin' %}selected{% endif %}>Arcmin</option>
+            <option value="arcsec" {% if sr_units == 'arcsec' %}selected{% endif %}>Arcsec</option>
+          </select>
         </div>
 
         <div class="input-group-append">
           <button type="submit" class="btn btn-secondary">Search</button>
-
         </div>
+
+      </div>
+    </div>
+
+    <div class="collapse {% if multicoords %}show{% endif %}" id="collapseMultiCoords">
+      <div class="form-group">
+        <textarea class="form-control" id="multicoords" name="multicoords" rows="3" placeholder="Coordinates or SIMBAD object name, one object per line">{{ multicoords }}</textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="input-group">
+
+        {% for sname,cut in surveys.items %}
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="cb{{ sname }}" name="selected" value="{{ sname }}" {% if sname in selected %}checked{% endif %}>
+            <label class="form-check-label" for="cb{{ sname }}">{{ cut.name }}</label>
+          </div>
+        {% endfor %}
+
       </div>
     </div>
 
   </form>
 
-  {% if message %}
-    <div class="alert alert-warning" role="alert">
-      {{ message }}
-    </div>
-  {% endif %}
+  {% for target in targets %}
 
-  {% if ra and dec and sr %}
-    <h3>{{ sr }} deg around {{ ra }} {{ dec }}</h3>
-  {% endif %}
+    {% if target.message %}
+      <div class="alert alert-warning" role="alert">
+        {{ target.message }}
+      </div>
+    {% endif %}
 
-  {% if cutouts %}
-    <div class="row">
+    {% if target.ra and target.dec and sr %}
+      <div class="alert alert-success" role="alert">
+        <strong>{{ target.name }}</strong>
+        at
+        <em>
+          {% eq_ra target.ra target.dec %} {% eq_dec target.ra target.dec %}
+        </em>
+        galactic l={% galactic_l target.ra target.dec %} b={% galactic_b target.ra target.dec %}
+      </div>
 
-      {% for cutout in cutouts %}
-        <div class="col-sm-4 pr-1 pl-1 pb-1 pt-1">
-          <div class="card">
-            <div class="card-header">
-              {{ cutout.name }}
+    {% endif %}
+
+    {% if target.cutouts %}
+      <div class="row mb-4">
+
+        {% for sname,cutout in target.cutouts.items %}
+
+          {% if sname in selected %}
+            <div class="col-sm-4 pr-1 pl-1 pb-1 pt-1">
+              <div class="card">
+                <div class="card-header">
+                  {{ cutout.name }}
+                </div>
+                <img class="card-img-top" src="{{ cutout.url }}"/>
+              </div>
             </div>
-            <img class="card-img-top" src="{{ cutout.url }}"/>
-          </div>
-        </div>
-      {% endfor %}
+          {% endif %}
+        {% endfor %}
 
-    </div>
-  {% endif %}
+      </div>
+    {% endif %}
+
+  {% endfor %}
 
 {% endblock %}
