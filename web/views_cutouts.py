@@ -41,12 +41,16 @@ surveys = OrderedDict([
     ['skymapper', {'name': 'SkyMapper', 'hips': 'CDS/P/skymapper-color', 'default':True}],
 
     ['iphas_halpha', {'name': 'IPHAS Halpha', 'hips': 'CDS/P/IPHAS/DR2/halpha'}],
+    ['vtss_halpha', {'name': 'VTSS Halpha', 'hips': 'CDS/P/VTSS/Ha'}],
+    ['shassa_halpha', {'name': 'SHASSA Halpha', 'hips': 'CDS/P/SHASSA/H'}],
 
     ['wise', {'name': 'allWISE', 'hips': 'CDS/P/allWISE/color', 'default':True}],
     ['wise_w1', {'name': 'WISE 3.4um', 'hips': 'CDS/P/allWISE/W1'}],
     ['wise_w2', {'name': 'WISE 4.6um', 'hips': 'CDS/P/allWISE/W2'}],
     ['wise_w3', {'name': 'WISE 12um', 'hips': 'CDS/P/allWISE/W3'}],
     ['wise_w4', {'name': 'WISE 22um', 'hips': 'CDS/P/allWISE/W4'}],
+
+    ['glimpse360', {'name': 'GLIMPSE360', 'hips': 'IPAC/P/GLIMPSE360'}],
 
 ])
 
