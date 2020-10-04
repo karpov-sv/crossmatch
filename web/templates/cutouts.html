@@ -92,6 +92,7 @@
               <div class="card">
                 <div class="card-header">
                   {{ cutout.name }}
+                  {% if cutout.fits %}<span class="pull-right"><a href="{{ cutout.fits }}" title="Download cutout as FITS file">FITS</a></span>{% endif %}
                 </div>
                 <img class="card-img-top" src="{{ cutout.url }}"/>
               </div>
@@ -103,5 +104,9 @@
     {% endif %}
 
   {% endfor %}
+
+  <div class="mt-5 text-muted {% if not targets %}fixed-bottom{% endif %}">
+    This service uses <a href="https://alasky.u-strasbg.fr/hips-image-services/hips2fits">hips2fits</a>, provided by CDS.
+  </div>
 
 {% endblock %}

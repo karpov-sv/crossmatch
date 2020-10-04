@@ -33,6 +33,8 @@ surveys = OrderedDict([
     ['galex_fuv', {'name': 'GALEX FUV'}],
 
     ['dss2', {'name': 'DSS2', 'hips': 'DSS2/color', 'default':True}],
+    # ['dss2b', {'name': 'DSS2 blue', 'hips': 'DSS2/blue'}],
+    # ['dss2r', {'name': 'DSS2 blue', 'hips': 'DSS2/blue'}],
 
     ['sdss', {'name': 'SDSS DR12', 'default':True}],
 
@@ -70,7 +72,19 @@ def get_cutout_url(survey, ra, dec, sr, size, overlay=False):
                     'rotation_angle': 0.0,
                     'format': 'jpg',
                     'stretch': 'linear',
-                    'cmap': 'viridis'})}
+                    'cmap': 'viridis'}),
+                'fits': 'http://alasky.u-strasbg.fr/hips-image-services/hips2fits?' + urllib.urlencode({
+                    'hips': surveys[survey]['hips'],
+                    'ra': ra,
+                    'dec': dec,
+                    'width': size,
+                    'height': size,
+                    'fov': sr,
+                    'projection': 'TAN',
+                    'coordsys': 'icrs',
+                    'rotation_angle': 0.0,
+                    'format': 'fits'})
+                }
 
     # GALEX
     elif survey == 'galex_nuv':
@@ -82,7 +96,13 @@ def get_cutout_url(survey, ra, dec, sr, size, overlay=False):
                     'Survey': 'galex near uv',
                     'Catalog': 'II/335/galex_ais' if overlay else None,
                     'Return': 'GIF',
-                    'LUT': 'colortables/blue-white.bin'})}
+                    'LUT': 'colortables/blue-white.bin'}),
+                'fits': 'https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?' + urllib.urlencode({
+                    'Position': '%s,%s' % (ra, dec),
+                    'Size': sr,
+                    'Pixels': size,
+                    'Survey': 'galex near uv',
+                    'Return': 'FITS'})}
     elif survey == 'galex_fuv':
         return {'name': 'GALEX FUV',
                 'url': 'https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?' + urllib.urlencode({
@@ -92,7 +112,13 @@ def get_cutout_url(survey, ra, dec, sr, size, overlay=False):
                     'Survey': 'galex far uv',
                     'Catalog': 'II/335/galex_ais' if overlay else None,
                     'Return': 'GIF',
-                    'LUT': 'colortables/blue-white.bin'})}
+                    'LUT': 'colortables/blue-white.bin'}),
+                'fits': 'https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?' + urllib.urlencode({
+                    'Position': '%s,%s' % (ra, dec),
+                    'Size': sr,
+                    'Pixels': size,
+                    'Survey': 'galex far uv',
+                    'Return': 'FITS'})}
     # DSS
     elif survey == 'dss':
         return {'name': 'DSS',
