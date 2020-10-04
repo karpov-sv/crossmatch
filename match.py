@@ -44,7 +44,7 @@ def match_cats(cats, mask=None, fill=False, verbose=False):
                 #cids = np.append(mid, [wheres[i][idxs[_]] for i in range(len(idxs))])
                 cids = np.append(mid, [matches[_][1][wheres[_][__]] for _,__ in enumerate(idxs)])
 
-                if mask is None or sum([__['matching_mask'][cids[_]] & mask for _,__ in enumerate(tables)]) == 0:
+                if mask is None or sum([__['matching_mask'][cids[_]] & mask for _,__ in enumerate(cats)]) == 0:
                     yield cids
 
                 idxs[0] = idxs[0] + 1
@@ -67,10 +67,8 @@ def match_cats(cats, mask=None, fill=False, verbose=False):
     new = Table(masked=False)
 
     for cat in cats:
-        for ic,col in enumerate(cat['table'].columns):
-            if col.name in ['matching_mask']:
-                continue
-
+        for ic,colname in enumerate(cat['table'].columns):
+            col = cat['table'][colname]
             newname = col.name + '_' + cat['name']
             newcol = Column(name=newname, dtype=col.dtype, description=col.description, unit=col.unit, format=col.format, meta=col.meta, length=nrows)
             new.add_column(newcol)
@@ -78,7 +76,7 @@ def match_cats(cats, mask=None, fill=False, verbose=False):
     for rownum in range(len(cids)):
         for tid,cat in enumerate(cats):
             if mask is not None:
-                cat['table']['matching_mask'][cids[rownum][tid]] |= mask
+                cat['matching_mask'][cids[rownum][tid]] |= mask
 
             for col in cat['table'].colnames:
                 newname = col+'_'+cat['name']

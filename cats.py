@@ -19,7 +19,7 @@ catslist = {
     # Distances to GaiaDR2 sources
     'gaiadr2dist': {'file': 'gaiadr2dist.xml', 'cds': 'I/347/gaia2dis', 'sr': 3, 'columns': ['Source', 'rest', 'b_rest', 'B_rest', 'rlen', 'ResFlag'], 'ID': 'Source'},
 
-    'galex' : {'file' : 'galex.xml', 'cds': 'II/335/galex_ais', 'sr': 5, 'columns': ['RAJ2000', 'DEJ2000', 'objid', 'FUV', 'e_FUV', 'NUV', 'e_NUV', 'Fafl', 'Nafl', 'Fexf', 'Nexf', 'Fr', 'Nr', 'nS_G', 'fS_G'], 'conversions': {'NUVmag': 'NUV', 'e_NUVmag': 'e_NUV', 'FUVmag': 'FUV', 'e_FUVmag': 'e_FUV'}, 'fallback_notuse': 'galex_old', 'ID': 'objid'},
+    'galex' : {'file' : 'galex.xml', 'cds': 'II/335/galex_ais', 'sr': 3, 'columns': ['RAJ2000', 'DEJ2000', 'objid', 'FUV', 'e_FUV', 'NUV', 'e_NUV', 'Fafl', 'Nafl', 'Fexf', 'Nexf', 'Fr', 'Nr', 'nS_G', 'fS_G', 'NUVw', 'FUVw'], 'conversions': {'NUVmag': 'NUV', 'e_NUVmag': 'e_NUV', 'FUVmag': 'FUV', 'e_FUVmag': 'e_FUV'}, 'fallback_notuse': 'galex_old', 'ID': 'objid'},
 
     # Fallback GALEX catalogue
     'galex_old' : {'file' : 'galex.xml', 'cds': 'II/312/ais', 'sr': 1, 'columns': ['RAJ2000', 'DEJ2000', 'objid', 'FUV', 'e_FUV', 'NUV', 'e_NUV', 'Fafl', 'Nafl', 'Fexf', 'Nexf', 'Fr', 'Nr'], 'id': 'objid'},
@@ -32,7 +32,7 @@ catslist = {
 
     'ps1': {'file': 'ps1.xml', 'cds': 'II/349/ps1', 'sr': 1, 'columns': ['RAJ2000', 'DEJ2000', 'objID', 'f_objID', 'gmag', 'e_gmag', 'rmag', 'e_rmag', 'imag', 'e_imag', 'zmag', 'e_zmag', 'ymag', 'e_ymag'], 'ID': 'objID'},
 
-    'sdss': {'file': 'sdss.xml', 'cds': 'V/147', 'ra': 'RA_ICRS', 'dec' : 'DE_ICRS', 'sr': 1, 'columns': ['RA_ICRS', 'DE_ICRS', 'class', 'SDSS12', 'Q', 'umag', 'e_umag', 'gmag', 'e_gmag', 'rmag', 'e_rmag', 'imag', 'e_imag', 'zmag', 'e_zmag'], 'ID': 'SDSS12'},
+    'sdss': {'file': 'sdss.xml', 'cds': 'V/147', 'ra': 'RA_ICRS', 'dec' : 'DE_ICRS', 'sr': 1, 'columns': ['RA_ICRS', 'DE_ICRS', 'class', 'SDSS12', 'Q', 'umag', 'e_umag', 'gmag', 'e_gmag', 'rmag', 'e_rmag', 'imag', 'e_imag', 'zmag', 'e_zmag', 'flags', 'gFlags'], 'ID': 'SDSS12'},
 
     'ukidss': {'file': 'ukidss.xml', 'cds': 'II/319/las9', 'sr': 1, 'columns': ['RAJ2000', 'DEJ2000',
 'Ymag', 'e_Ymag', 'Jmag1', 'e_Jmag1', 'Jmag2', 'e_Jmag2', 'Hmag', 'e_Hmag', 'Kmag', 'e_Kmag', 'ID', 'cl', 'p*', 'pG', 'pN'], 'conversions': {'p_': 'p*'}, 'ID': 'ID'},
@@ -42,7 +42,7 @@ catslist = {
     # Extra
     'tycho2': {'file': 'tycho2.xml', 'cds': 'I/259/tyc2', 'sr': 1, 'ra': '_RAJ2000', 'dec': '_DEJ2000', 'columns': ['recno', 'TYC1', 'TYC2', 'TYC3', '_RAJ2000', '_DEJ2000', 'BTmag', 'e_BTmag', 'VTmag', 'e_VTmag', 'prox'], 'extracols': ['_RAJ2000', '_DEJ2000', 'recno'], 'ID': 'recno'},
 
-    'skymapper': {'file': 'smss.xml', 'cds': 'II/358/smss', 'ra': 'RAICRS', 'dec' : 'DEICRS', 'sr': 1, 'columns': ['ObjectId', 'RAICRS', 'DEICRS', 'SMSS', 'flags', 'uPSF', 'e_uPSF', 'vPSF', 'e_vPSF', 'gPSF', 'e_gPSF', 'rPSF', 'e_rPSF', 'iPSF', 'e_iPSF', 'zPSF', 'e_zPSF', 'Prox'], 'ID': 'ObjectId'},
+    'skymapper': {'file': 'skymapper.xml', 'cds': 'II/358/smss', 'ra': 'RAICRS', 'dec' : 'DEICRS', 'sr': 1, 'columns': ['ObjectId', 'RAICRS', 'DEICRS', 'SMSS', 'flags', 'flagsv', 'flagsu', 'flagsg', 'flagsr', 'flagsi', 'flagsz', 'uPSF', 'e_uPSF', 'vPSF', 'e_vPSF', 'gPSF', 'e_gPSF', 'rPSF', 'e_rPSF', 'iPSF', 'e_iPSF', 'zPSF', 'e_zPSF', 'ClassStar', 'Prox'], 'ID': 'ObjectId'},
 }
 
 def download_table(cdsname, name=None, ra=0, dec=0, sr=0.1, columns=[], limit=-1, conversions={}, extracols=[]):
