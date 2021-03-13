@@ -45,6 +45,7 @@ surveys = OrderedDict([
     ['iphas_halpha', {'name': 'IPHAS Halpha', 'hips': 'CDS/P/IPHAS/DR2/halpha'}],
     ['vtss_halpha', {'name': 'VTSS Halpha', 'hips': 'CDS/P/VTSS/Ha'}],
     ['shassa_halpha', {'name': 'SHASSA Halpha', 'hips': 'CDS/P/SHASSA/H'}],
+    ['shs_halpha', {'name': 'SHS Halpha', 'hips': 'CDS/P/SHS'}],
 
     ['wise', {'name': 'allWISE', 'hips': 'CDS/P/allWISE/color', 'default':True}],
     ['wise_w1', {'name': 'WISE 3.4um', 'hips': 'CDS/P/allWISE/W1'}],
@@ -211,12 +212,22 @@ def cutouts(request, size=512):
                 target['cutouts'] = OrderedDict()
 
                 for _ in surveys.keys():
-                    cut = get_cutout_url(_, ra, dec, context['sr'], size)
-                    if cut is not None:
-                        target['cutouts'][_] = cut
+                    if _ in context['selected']:
+                        cut = get_cutout_url(_, ra, dec, context['sr'], size)
+                        if cut is not None:
+                            target['cutouts'][_] = cut
 
             targets.append(target)
 
         context['targets'] = targets
+
+        nselected = len(context['selected'])
+
+        if nselected < 4:
+            context['colsize'] = 4
+        elif nselected == 4:
+            context['colsize'] = 3
+        else:
+            context['colsize'] = 2
 
     return TemplateResponse(request, 'cutouts.html', context=context)
