@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import numpy as np
 import posixpath, glob, datetime, os, sys, urllib, shutil, itertools
+from functools import reduce
 
 from astropy.io import votable
 from astropy.table import Table, Column, MaskedColumn, vstack
@@ -82,7 +83,7 @@ def match_cats(cats, mask=None, fill=False, verbose=False):
                 newname = col+'_'+cat['name']
                 colval = cat['table'][col]
 
-                if not new.dtype.fields.has_key(newname):
+                if not newname in new.dtype.fields:
                     continue
 
                 # Fill missing values
